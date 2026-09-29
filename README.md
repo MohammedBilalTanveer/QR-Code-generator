@@ -59,6 +59,32 @@ Vercel detects Flask from `requirements.txt` and `app.py`, so no settings are ne
 
 Every later `npx vercel --prod` (or `git push`) redeploys.
 
+## Deploy to Render
+
+Render deploys from GitHub. The repo includes a [`render.yaml`](render.yaml) Blueprint,
+so Render configures the service itself:
+
+1. Push your latest code to GitHub.
+2. Sign in at https://dashboard.render.com with your GitHub account and choose
+   **New > Blueprint**.
+3. Pick the `QR-Code-generator` repository and click **Apply**.
+
+Render installs `requirements.txt` on Python 3.12 (from `.python-version`), starts the app
+with gunicorn, and gives you an `https://…onrender.com` address. Every push to `main`
+redeploys it.
+
+To set it up by hand instead, choose **New > Web Service**, pick the repo, and enter:
+
+| Setting | Value |
+| --- | --- |
+| Language | Python 3 |
+| Build Command | `pip install -r requirements.txt` |
+| Start Command | `gunicorn app:app --workers 1 --threads 4 --timeout 120` |
+| Instance Type | Free |
+
+On the free plan Render puts the app to sleep after 15 minutes without visitors. The next
+visit wakes it up, which takes about a minute.
+
 ## Project layout
 
 ```
@@ -66,9 +92,10 @@ app.py              Flask app: serves the page and the /api routes (Vercel's ent
 qr_core.py          QR generation (qrcode) and decoding (OpenCV)
 public/             The web UI: index.html, styles.css, app.js, vendor/jsQR.js
 tests/              pytest suite for the API
-requirements.txt    Runtime dependencies Vercel installs
-vercel.json         Security headers
-.python-version     Python 3.12 (Vercel's default runtime)
+requirements.txt    Runtime dependencies (installed by Vercel and Render)
+vercel.json         Vercel settings: security headers
+render.yaml         Render settings: build and start commands
+.python-version     Python 3.12 (used by Vercel and Render)
 ```
 
 ## Notes

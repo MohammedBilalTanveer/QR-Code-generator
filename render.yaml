@@ -1,0 +1,16 @@
+# Render Blueprint (https://render.com/docs/blueprint-spec).
+# In the Render dashboard choose New > Blueprint and pick this GitHub repo;
+# Render reads this file and creates the web service for you.
+services:
+  - type: web
+    name: qr-studio
+    runtime: python # version comes from .python-version
+    plan: free
+    region: singapore # Render's closest region to India
+    buildCommand: pip install -r requirements.txt
+    # gunicorn listens on 0.0.0.0:$PORT (which Render sets) on its own. One
+    # worker with 4 threads is plenty for this app on the small free instance,
+    # and the long timeout covers loading OpenCV for the first picture scan.
+    startCommand: gunicorn app:app --workers 1 --threads 4 --timeout 120
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit # redeploy on every push to GitHub

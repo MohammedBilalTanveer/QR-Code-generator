@@ -2,6 +2,9 @@ flask==3.1.3
 qrcode==8.2
 pillow==12.3.0
 # "headless" matters: the regular opencv-python needs desktop GUI libraries
-# (libGL) that don't exist on Vercel's servers.
+# (libGL) that cloud servers like Vercel and Render don't have.
 opencv-python-headless==5.0.0.93
 numpy==2.5.3
+# Production web server that Render starts the app with. It only runs on
+# Linux/macOS; on Windows, run the app locally with `python app.py`.
+gunicorn==26.2.0
