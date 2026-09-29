@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>QR Studio · Create and scan QR codes</title>
+  <meta name="description" content="Make a QR code from any text or link, or scan one with your camera or from a picture. Free, no sign-up.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f5f6fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0c0e14" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-qr" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/>
+      <path d="M6.5 6.5h.01M17.5 6.5h.01M6.5 17.5h.01M14.5 14.5h.01M20.5 14.5h.01M17.5 17.5h.01M14.5 20.5h.01M20.5 20.5h.01"/>
+    </symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 8V6a3 3 0 0 1 3-3h2M16 3h2a3 3 0 0 1 3 3v2M21 16v2a3 3 0 0 1-3 3h-2M8 21H6a3 3 0 0 1-3-3v-2M7 12h10"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3.5 8.5A2.5 2.5 0 0 1 6 6h1.5l1.6-2.2a1.5 1.5 0 0 1 1.2-.8h3.4a1.5 1.5 0 0 1 1.2.8L16.5 6H18a2.5 2.5 0 0 1 2.5 2.5v9A2.5 2.5 0 0 1 18 20H6a2.5 2.5 0 0 1-2.5-2.5z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.8"/><path d="m21 15.5-4.6-4.6a1.5 1.5 0 0 0-2.1 0L5.5 20.5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3.5v11M7.5 10l4.5 4.5 4.5-4.5M4.5 20h15"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="12" height="12" rx="2.5"/><path d="M15.5 5.5V5A1.5 1.5 0 0 0 14 3.5H5A1.5 1.5 0 0 0 3.5 5v9A1.5 1.5 0 0 0 5 15.5h.5"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><circle cx="17.5" cy="5.5" r="2.5"/><circle cx="6.5" cy="12" r="2.5"/><circle cx="17.5" cy="18.5" r="2.5"/><path d="m8.7 10.7 6.6-3.9M8.7 13.3l6.6 3.9"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 13.5V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4.5"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11.5A8 8 0 0 0 6.3 6.3L4 8.5M4 4v4.5h4.5M4 12.5a8 8 0 0 0 13.7 5.2l2.3-2.2M20 20v-4.5h-4.5"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3.5 13.8 9a1.6 1.6 0 0 0 1.2 1.2l5.5 1.8-5.5 1.8a1.6 1.6 0 0 0-1.2 1.2L12 20.5l-1.8-5.5A1.6 1.6 0 0 0 9 13.8L3.5 12 9 10.2A1.6 1.6 0 0 0 10.2 9z"/></symbol>
+  </svg>
+
+  <header class="site-header">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true"><svg class="icon"><use href="#i-qr"/></svg></span>
+      <span class="brand-name">QR Studio</span>
+    </a>
+    <p class="tagline">Create QR codes and scan them, right in your browser.</p>
+  </header>
+
+  <main class="container">
+    <div class="tabs" role="tablist" aria-label="Choose a tool">
+      <button class="tab" type="button" role="tab" id="tab-create" data-tab="create" aria-controls="panel-create" aria-selected="true">
+        <svg class="icon" aria-hidden="true"><use href="#i-qr"/></svg>Create
+      </button>
+      <button class="tab" type="button" role="tab" id="tab-scan" data-tab="scan" aria-controls="panel-scan" aria-selected="false" tabindex="-1">
+        <svg class="icon" aria-hidden="true"><use href="#i-scan"/></svg>Scan
+      </button>
+    </div>
+
+    <section class="panel" id="panel-create" role="tabpanel" aria-labelledby="tab-create">
+      <div class="grid">
+        <form class="card form-card" id="create-form" novalidate>
+          <div class="field">
+            <label class="label" for="qr-text">Text or link</label>
+            <textarea id="qr-text" name="text" rows="4" placeholder="https://example.com" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go"></textarea>
+            <div class="field-foot">
+              <span class="hint hint-desktop">Press <kbd>Enter</kbd> to create · <kbd>Shift</kbd> + <kbd>Enter</kbd> for a new line</span>
+              <span class="count" id="char-count">0 characters</span>
+            </div>
+          </div>
+
+          <fieldset class="options">
+            <legend class="label">Customize</legend>
+            <div class="option-row">
+              <span class="option-name" id="ec-label">Error correction</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="ec-label">
+                <input type="radio" name="ec" id="ec-l" value="L"><label for="ec-l" title="Low: still reads with about 7% of the code damaged">L</label>
+                <input type="radio" name="ec" id="ec-m" value="M" checked><label for="ec-m" title="Medium: still reads with about 15% damaged">M</label>
+                <input type="radio" name="ec" id="ec-q" value="Q"><label for="ec-q" title="Quartile: still reads with about 25% damaged">Q</label>
+                <input type="radio" name="ec" id="ec-h" value="H"><label for="ec-h" title="High: still reads with about 30% damaged">H</label>
+              </div>
+            </div>
+            <div class="option-row">
+              <span class="option-name" id="size-label">Image size</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="size-label">
+                <input type="radio" name="size" id="size-s" value="6"><label for="size-s">Small</label>
+                <input type="radio" name="size" id="size-m" value="10" checked><label for="size-m">Medium</label>
+                <input type="radio" name="size" id="size-l" value="16"><label for="size-l">Large</label>
+              </div>
+            </div>
+            <div class="option-row">
+              <span class="option-name">Colors</span>
+              <div class="colors">
+                <label class="color-field"><input type="color" id="fg" value="#111827"><span>Code</span></label>
+                <label class="color-field"><input type="color" id="bg" value="#ffffff"><span>Background</span></label>
+                <button type="button" class="link-btn" id="reset-colors">Reset</button>
+              </div>
+            </div>
+            <p class="notice notice-warn" id="contrast-warning" hidden></p>
+          </fieldset>
+
+          <button type="submit" class="btn btn-primary btn-block" id="generate-btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-sparkle"/></svg>Create QR code
+          </button>
+          <p class="notice notice-error" id="create-error" role="alert" hidden></p>
+        </form>
+
+        <div class="card preview-card">
+          <div class="qr-frame" id="qr-frame">
+            <img id="qr-image" alt="" hidden>
+            <div class="empty-state" id="qr-empty">
+              <svg class="icon icon-xl" aria-hidden="true"><use href="#i-qr"/></svg>
+              <p>Your QR code will appear here</p>
+            </div>
+          </div>
+          <p class="meta" id="qr-meta" hidden></p>
+          <div class="actions">
+            <button type="button" class="btn btn-secondary" id="download-btn" disabled>
+              <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Download PNG
+            </button>
+            <button type="button" class="btn btn-ghost" id="copy-image-btn" hidden>
+              <svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>Copy
+            </button>
+            <button type="button" class="btn btn-ghost" id="share-btn" hidden>
+              <svg class="icon" aria-hidden="true"><use href="#i-share"/></svg>Share
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-scan" role="tabpanel" aria-labelledby="tab-scan" hidden>
+      <div class="grid grid-scan">
+        <div class="card scan-card" id="scan-card">
+          <div class="viewport" id="viewport" data-state="idle">
+            <video id="video" playsinline muted></video>
+            <canvas id="snapshot" width="0" height="0"></canvas>
+            <div class="reticle" aria-hidden="true">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none"><path vector-effect="non-scaling-stroke" d="M2 24V10a8 8 0 0 1 8-8h14M76 2h14a8 8 0 0 1 8 8v14M98 76v14a8 8 0 0 1-8 8H76M24 98H10a8 8 0 0 1-8-8V76"/></svg>
+              <span class="scanline"></span>
+            </div>
+            <div class="vp-overlay vp-idle">
+              <span class="vp-icon"><svg class="icon icon-lg" aria-hidden="true"><use href="#i-camera"/></svg></span>
+              <p class="vp-title">Scan with your camera</p>
+              <p class="vp-text">The video stays on your device.</p>
+              <button type="button" class="btn btn-primary" id="start-camera">Start camera</button>
+            </div>
+            <div class="vp-overlay vp-busy" role="status">
+              <span class="spinner" aria-hidden="true"></span>
+              <p class="vp-text" id="busy-text">Starting camera…</p>
+            </div>
+            <div class="vp-pill"><span class="dot" aria-hidden="true"></span>Looking for a QR code…</div>
+            <div class="vp-toolbar">
+              <select id="camera-select" aria-label="Camera" hidden></select>
+              <button type="button" class="btn btn-small btn-overlay" id="stop-camera">
+                <svg class="icon" aria-hidden="true"><use href="#i-stop"/></svg>Stop
+              </button>
+            </div>
+            <div class="drop-hint" aria-hidden="true">Drop the picture to scan it</div>
+          </div>
+
+          <div class="upload-row">
+            <button type="button" class="btn btn-secondary" id="upload-btn">
+              <svg class="icon" aria-hidden="true"><use href="#i-image"/></svg>Upload a picture
+            </button>
+            <span class="hint hint-desktop">or drag one here, or paste it with <kbd data-mod-key>Ctrl</kbd> + <kbd>V</kbd></span>
+            <input type="file" id="file-input" accept="image/*" hidden>
+          </div>
+          <p class="notice notice-error" id="scan-error" role="alert" hidden></p>
+        </div>
+
+        <div class="card result-card" id="result-card">
+          <h2 class="card-title">Result</h2>
+          <div class="empty-state" id="result-empty">
+            <svg class="icon icon-xl" aria-hidden="true"><use href="#i-scan"/></svg>
+            <p>Scan a code and what it says will show up here. Websites open automatically.</p>
+          </div>
+          <div id="result-body" hidden>
+            <div class="result-list" id="result-list" aria-live="polite"></div>
+            <div class="result-foot">
+              <span class="meta" id="result-source"></span>
+              <button type="button" class="btn btn-secondary" id="scan-again">
+                <svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg><span>Scan again</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Camera scanning runs on your device. Pictures you upload are decoded on the server and never stored.</p>
+    <p>Built with Python, Flask, qrcode and OpenCV.</p>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
